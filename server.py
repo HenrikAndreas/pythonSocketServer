@@ -32,7 +32,8 @@ class Server(object):
                 if notifiedSocket == self._serverSocket:
                     clientSocket, clientAdress = self._serverSocket.accept()
                     
-                    username = None #FIX (If username exists - login : else - register)
+                    username = clientSocket.recv(self._HEADERLENGTH)
+                    print(username.decode('utf-8'))
                     password = None #FIX
                     
                     
