@@ -13,3 +13,11 @@ class Client(object):
         self._clientSocket.connect((self._IP, self._PORT))
         self._clientSocket.setblocking(False)
         self._myUsername = self._username.encode('utf-8')
+        self._clientSocket.send(self._myUsername)
+
+
+
+
+
+
+client = Client()

@@ -13,7 +13,11 @@ class Server(object):
         self._serverSocket.listen()
         self._socketsList = [self._serverSocket]
         self._clients = {}
-    
+
+        self._users = {'henrik' : '7MammA99!'}
+        print('listening..')
+        
+
     def getIP(self):
         return self._IP
 
@@ -29,15 +33,20 @@ class Server(object):
 
             for notifiedSocket in readSockets:
 
+                # Accept new connection...
                 if notifiedSocket == self._serverSocket:
-                    clientSocket, clientAdress = self._serverSocket.accept()
+                    clientSocket, clientAddress = self._serverSocket.accept()
                     
-                    username = clientSocket.recv(self._HEADERLENGTH)
-                    print(username.decode('utf-8'))
-                    password = None #FIX
+                    username = clientSocket.recv(self._HEADERLENGTH).decode('utf-8')
+                    if username in self._users:
+                        passwordSentence = 'Enter password: '.encode('utf-8')
+                        clientSocket.send(passwordSentence)
+                    else:
+                        notFoundSentence = 'Not found. Create new account? (y / n)'.encode('utf-8')
+                        clientAddress.send(notFoundSentence)
                     
                     
 
                     
 server = Server()
-# server.serverLoop()
+server.serverLoop()
