@@ -1,3 +1,4 @@
+#Add color to own message > Easier to distinguish
 from socket import *
 import threading
 import sys
@@ -7,7 +8,7 @@ class Client(object):
     def __init__(self):
         self._IP = "localhost"
         self._PORT = 1234
-        self._HEADERLENGTH = 1024
+        self._messageLength = 1024
         self._username = input("Enter username: ")
         self._clientSocket = socket(AF_INET, SOCK_STREAM)
         self._clientSocket.connect((self._IP, self._PORT))
@@ -21,7 +22,7 @@ class Client(object):
 	
         while True:
             try:
-                message = self._clientSocket.recv(self._HEADERLENGTH).decode('utf-8')
+                message = self._clientSocket.recv(self._messageLength).decode('utf-8')
                 if message != '' :
                     print(message)
 
