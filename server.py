@@ -107,25 +107,18 @@ class Server(object):
 
                 # Connection exists > New message is recieved
                 else:
+
                     try:
                         message = notifiedSocket.recv(self._messageLength)
-                    # except ConnectionResetError:
-                    #     self._socketsList.remove(notifiedSocket)
-                    #     del self._clients[notifiedSocket]
-                    #     continue
-                    
-                    # if not message or message == False:
-                    except ConnectionResetError:
-                        print(f'{self._clients[notifiedSocket]} disconnected')
-                        # Sending disconnect to all clients
-                        for client in self._clients:
-                            if client != notifiedSocket:
-                                client.send(f"{self._clients[notifiedSocket]} disconnected".encode('utf-8'))
-                        self._socketsList.remove(notifiedSocket)
-                        del self._clients[notifiedSocket]
                         
-                        continue
+                        if not message or message == False:
+                            self.removeSocket(notifiedSocket)
+                            continue
 
+                    except ConnectionResetError:
+                        self.removeSocket(notifiedSocket)
+                        continue
+                    
                     
                     print(f"Recieved message from {self._clients[notifiedSocket]}: {message.decode('utf-8')}")
 
@@ -135,6 +128,15 @@ class Server(object):
                     for client in self._clients:
                         if client != notifiedSocket:
                             client.send(fullMessage.encode('utf-8'))
+
+    def removeSocket(self, socket):
+        print(f"{self._clients[socket]} disconnected")
+        # Sending disconnect to all clients
+        for client in self._clients:
+            if client != socket:
+                client.send(f"{self._clients[socket]} disconnected".encode('utf-8'))
+        self._socketsList.remove(socket)
+        del self._clients[socket]
 
 
 server = Server()
