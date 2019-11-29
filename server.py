@@ -46,7 +46,15 @@ class Server(object):
 
     def getPort(self):
         return self._PORT
-    
+
+    def removeSocket(self, socket):
+        print(f"{self._clients[socket]} disconnected")
+        # Sending disconnect to all clients
+        for client in self._clients:
+            if client != socket:
+                client.send(f"{self._clients[socket]} disconnected".encode('utf-8'))
+        self._socketsList.remove(socket)
+        del self._clients[socket]
   
     def serverLoop(self):
         while True:
@@ -115,6 +123,7 @@ class Server(object):
                             self.removeSocket(notifiedSocket)
                             continue
 
+                    # Client suddenly disconnected
                     except ConnectionResetError:
                         self.removeSocket(notifiedSocket)
                         continue
@@ -129,14 +138,6 @@ class Server(object):
                         if client != notifiedSocket:
                             client.send(fullMessage.encode('utf-8'))
 
-    def removeSocket(self, socket):
-        print(f"{self._clients[socket]} disconnected")
-        # Sending disconnect to all clients
-        for client in self._clients:
-            if client != socket:
-                client.send(f"{self._clients[socket]} disconnected".encode('utf-8'))
-        self._socketsList.remove(socket)
-        del self._clients[socket]
 
 
 server = Server()
