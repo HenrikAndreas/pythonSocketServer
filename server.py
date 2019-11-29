@@ -13,10 +13,10 @@ class Server(object):
         self._serverSocket.bind((self._IP, self._PORT))
         self._serverSocket.listen()
         self._socketsList = [self._serverSocket]
-        self._clients = {}
+        self._clients = {} #clientSocket : username
 
         self._users = {'henrik' : '123!', 'bodil' : 'henrik123'}
-        print('listening..')
+        print(f'Listening on {self._IP}:{self._PORT}...')
         
 
     def getIP(self):
@@ -41,12 +41,21 @@ class Server(object):
                     username = clientSocket.recv(self._HEADERLENGTH).decode('utf-8')
                     if username in self._users:
                         clientSocket.send('Enter password: '.encode('utf-8'))
+
                         loginPassword = clientSocket.recv(self._HEADERLENGTH)
                         loginPassword = loginPassword.decode('utf-8')
                         if loginPassword == self._users[username]:
-                            clientSocket.send(f'Velkommen {username}!'.encode('utf-8'))
+                            clientSocket.send(f'Welcome {username}!'.encode('utf-8'))
+                        else:
+                            clientSocket.send("Wrong password".encode('utf-8'))
+
                     else:
                         clientSocket.send('Not found. Create new account? (y / n)'.encode('utf-8'))
+
+                    self._clients[clientSocket] = username
+                    self._socketsList.append(clientSocket)
+                    
+                    print(f"{self._clients[clientSocket]} {clientAddress[0]}:{clientAddress[1]} connected")
                     
 
                     
