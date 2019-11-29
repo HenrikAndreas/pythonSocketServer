@@ -7,7 +7,7 @@ import errno
 
 class Client(object):
     def __init__(self):
-        self._IP = "10.0.0.119"
+        self._IP = "80.212.111.238"
         self._PORT = 1234
         self._messageLength = 1024
         self._username = input("Enter username: ")
