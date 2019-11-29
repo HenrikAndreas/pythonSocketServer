@@ -14,9 +14,18 @@ class Client(object):
         self._clientSocket.setblocking(False)
         self._myUsername = self._username.encode('utf-8')
         self._clientSocket.send(self._myUsername)
+	
+        while True:
+            try:
+                message = self._clientSocket.recv(self._HEADERLENGTH).decode('utf-8')
+                print(message)
 
-
-
+            # If simply no message recieved, ignore error and start loop over
+            except IOError as e:
+                if e.errno != errno.EAGAIN and e.errno != errno.EWOULDBLOCK:
+                    print(f'Reading error: {str(e)}')
+                    sys.exit()
+                continue
 
 
 
