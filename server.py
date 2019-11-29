@@ -14,7 +14,7 @@ class Server(object):
         self._socketsList = [self._serverSocket]
         self._clients = {}
 
-        self._users = {'henrik' : '7MammA99!'}
+        self._users = {'henrik' : '7MammA99!', 'bodil' : 'henrik123'}
         print('listening..')
         
 
@@ -39,11 +39,13 @@ class Server(object):
                     
                     username = clientSocket.recv(self._HEADERLENGTH).decode('utf-8')
                     if username in self._users:
-                        passwordSentence = 'Enter password: '.encode('utf-8')
-                        clientSocket.send(passwordSentence)
+                        clientSocket.send('Enter password: '.encode('utf-8'))
+                        loginPassword = clientSocket.recv(self._HEADERLENGTH)
+                        loginPassword = loginPassword.decode('utf-8')
+                        if loginPassword == self._users[username]:
+                            clientSocket.send(f'Velkommen {username}!'.encode('utf-8'))
                     else:
-                        notFoundSentence = 'Not found. Create new account? (y / n)'.encode('utf-8')
-                        clientAddress.send(notFoundSentence)
+                        clientSocket.send('Not found. Create new account? (y / n)'.encode('utf-8'))
                     
                     
 
