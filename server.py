@@ -15,7 +15,7 @@ class Server(object):
         self._socketsList = [self._serverSocket]
         self._clients = {}
 
-        self._users = {'henrik' : '7MammA99!', 'bodil' : 'henrik123'}
+        self._users = {'henrik' : '123!', 'bodil' : 'henrik123'}
         print('listening..')
         
 
