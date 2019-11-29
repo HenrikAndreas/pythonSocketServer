@@ -40,6 +40,8 @@ class Client(object):
             if message:
                 message = message.encode('utf-8')
                 self._clientSocket.send(message)
+                #Send username with message
+                #in server - associate clientsocket object with username and add to message
 
 
 client = Client()
