@@ -107,7 +107,10 @@ class Server(object):
 
                 # Connection exists > New message is recieved
                 else:
-                    message = notifiedSocket.recv(self._messageLength)
+                    try:
+                        message = notifiedSocket.recv(self._messageLength)
+                    except ConnectionResetError:
+                        print("You're on to something here boy")
                     
                     if not message or message == False:
                         print(f'{self._clients[notifiedSocket]} disconnected')
