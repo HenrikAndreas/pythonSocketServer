@@ -109,12 +109,13 @@ class Server(object):
                 else:
                     try:
                         message = notifiedSocket.recv(self._messageLength)
-                    except ConnectionResetError:
-                        self._socketsList.remove(notifiedSocket)
-                        del self._clients[notifiedSocket]
-                        continue
+                    # except ConnectionResetError:
+                    #     self._socketsList.remove(notifiedSocket)
+                    #     del self._clients[notifiedSocket]
+                    #     continue
                     
-                    if not message or message == False:
+                    # if not message or message == False:
+                    except ConnectionResetError:
                         print(f'{self._clients[notifiedSocket]} disconnected')
                         # Sending disconnect to all clients
                         for client in self._clients:
