@@ -109,7 +109,7 @@ class Server(object):
                 else:
                     message = notifiedSocket.recv(self._messageLength)
                     
-                    if not message:
+                    if not message or message == False:
                         print(f'{self._clients[notifiedSocket]} disconnected')
                         # Sending disconnect to all clients
                         for client in self._clients:
