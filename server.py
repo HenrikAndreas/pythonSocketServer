@@ -1,5 +1,6 @@
 # Server Class
 # if their client is not identical to mine -- refuse access
+# Read from log and send to users
 from socket import *
 import sys
 import select

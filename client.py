@@ -1,5 +1,4 @@
 # Add color to own message > Easier to distinguish
-# If not login --> Sys.exit()
 from socket import *
 import threading
 import sys
