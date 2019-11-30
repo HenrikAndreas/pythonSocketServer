@@ -9,7 +9,7 @@ class Client(object):
     def __init__(self, username):
         self._IP = 'localhost'#"80.212.111.238"
         self._PORT = 1234
-        self._messageLength = 1024
+        self._messageLength = 150
         self._username = username
         self._clientSocket = socket(AF_INET, SOCK_STREAM)
 

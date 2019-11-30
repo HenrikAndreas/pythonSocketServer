@@ -3,22 +3,25 @@
 from socket import *
 import sys
 import select
+from datetime import datetime
 
 class Server(object):
     def __init__(self):
         self._IP = 'localhost'#"10.0.0.119"
         self._PORT = 1234
-        self._messageLength = 1024
+        self._messageLength = 150
         self._serverSocket = socket(AF_INET, SOCK_STREAM)
         self._serverSocket.setsockopt(SOL_SOCKET, SO_REUSEADDR, 1)
         self._serverSocket.bind((self._IP, self._PORT))
         self._serverSocket.listen()
         self._socketsList = [self._serverSocket]
         self._clients = {} #clientSocket : username
-
+        self._time = f"{datetime.now().year}:{datetime.now().month}:{datetime.now().day} {datetime.now().hour}.{datetime.now().minute}"
         self._users = self._getUsers()
 
-        print(f'Listening on {self._IP}:{self._PORT}...')
+        serverMsg = f'{self._time}: Listening on {self._IP}:{self._PORT}...'
+        self.log(serverMsg)
+        print(serverMsg)
     
     # Initiating the dictionary that stores usernames and passwords
     def _getUsers(self):
@@ -39,7 +42,11 @@ class Server(object):
         dataFile = open("users.dat", 'a')
         dataFile.write(f"{username}       {password}\n")
         dataFile.close()
-        
+    
+    def log(self, message):
+        logFile = open('log.dat', 'a')
+        logFile.write(f'{message}\n')
+        logFile.close()
 
     def getIP(self):
         return self._IP
@@ -48,13 +55,16 @@ class Server(object):
         return self._PORT
 
     def removeSocket(self, socket):
-        print(f"{self._clients[socket]} disconnected")
+        serverMsg = f"{self._time}: {self._clients[socket]} disconnected"
+        self.log(serverMsg)
+        print(serverMsg)
         # Sending disconnect to all clients
         for client in self._clients:
             if client != socket:
                 client.send(f"{self._clients[socket]} disconnected".encode('utf-8'))
         self._socketsList.remove(socket)
         del self._clients[socket]
+
 
     def serverLoop(self):
         while True:
@@ -74,10 +84,10 @@ class Server(object):
                         loginPassword = clientSocket.recv(self._messageLength)
                         loginPassword = loginPassword.decode('utf-8')
                         if loginPassword == self._users[username]:
-                            clientSocket.send(f'Welcome {username}!'.encode('utf-8'))
+                            clientSocket.send(f'Welcome {username}!\n'.encode('utf-8'))
                 
                         else:
-                            clientSocket.send("Wrong password".encode('utf-8'))
+                            clientSocket.send("Wrong password\n> Disconnected".encode('utf-8'))
                             clientSocket.close()
                             continue
 
@@ -86,18 +96,34 @@ class Server(object):
                         clientSocket.send('Not found. Create new account? (y / n)'.encode('utf-8'))
                         answer = clientSocket.recv(self._messageLength).decode('utf-8').lower()
                         if answer == 'y':
+
                             clientSocket.send("Enter username: ".encode('utf-8'))
                             username = clientSocket.recv(self._messageLength).decode('utf-8').lower()
-                            print(f'New: {username}')
+
+                            if (len(username.split()) > 1):
+                                clientSocket.send(f"Username cannot consist of more than one word\n> Disconnected".encode('utf-8'))
+                                clientSocket.close()
+                                continue
+
+                            if  (len(username) > self._messageLength):
+                                clientSocket.send(f"Username cannot exceed {self._messageLength} characters\n> Disconnected".encode('utf-8'))
+                                clientSocket.close()
+                                continue
+                                
+                            
 
                             clientSocket.send("Enter password: ".encode('utf-8'))
                             password = clientSocket.recv(self._messageLength).decode('utf-8')
-
+                            if (len(password.split()) > 1):
+                                clientSocket.send(f"Password cannot consist of more than one word\n> Disconnected".encode('utf-8'))
+                                clientSocket.close()
+                                continue
+                            
                             self.newUser(username, password)
                             # Updating our database without closing server
                             self._users = self._getUsers()
                         else:
-
+                            clientSocket.send("> Disconnected ".encode('utf-8'))
                             clientSocket.close()
                             continue
                     # If we succeded to login, place client in our socketList for select
@@ -105,7 +131,9 @@ class Server(object):
                     self._clients[clientSocket] = username
                     self._socketsList.append(clientSocket)
                     
-                    print(f"{self._clients[clientSocket]} on {clientAddress[0]}:{clientAddress[1]} connected")
+                    serverMsg = f"{self._time}: {self._clients[clientSocket]} on {clientAddress[0]}:{clientAddress[1]} connected"
+                    self.log(serverMsg)
+                    print(serverMsg)
                     
                     # Send message to all clients who has connected
                     for client in self._clients:
@@ -129,7 +157,9 @@ class Server(object):
                         continue
                     
                     
-                    print(f"Recieved message from {self._clients[notifiedSocket]}: {message.decode('utf-8')}")
+                    serverMsg = f"{self._time}: Recieved message from {self._clients[notifiedSocket]}: {message.decode('utf-8')}"
+                    self.log(serverMsg)
+                    print(serverMsg)
 
                     fullMessage = f"{self._clients[notifiedSocket]} >>> {message.decode('utf-8')}"
 
