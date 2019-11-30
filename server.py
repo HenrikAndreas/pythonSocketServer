@@ -6,7 +6,7 @@ import select
 
 class Server(object):
     def __init__(self):
-        self._IP = "10.0.0.119"
+        self._IP = 'localhost'#"10.0.0.119"
         self._PORT = 1234
         self._messageLength = 1024
         self._serverSocket = socket(AF_INET, SOCK_STREAM)
@@ -55,7 +55,7 @@ class Server(object):
                 client.send(f"{self._clients[socket]} disconnected".encode('utf-8'))
         self._socketsList.remove(socket)
         del self._clients[socket]
-  
+
     def serverLoop(self):
         while True:
             readSockets, writeSockets, exceptionSockets = select.select(self._socketsList, [], self._socketsList)
