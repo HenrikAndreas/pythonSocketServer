@@ -47,12 +47,26 @@ class Server(object):
         dataFile = open("users.dat", 'a')
         dataFile.write(f"{username}       {password}\n")
         dataFile.close()
-    
+    # Logs all server activity
     def log(self, message):
         logFile = open('log.dat', 'a')
         logFile.write(f'{message}\n')
         logFile.close()
 
+    # Writes out history in clients terminal, so that client can view previous messages
+    def writeToHistory(self, message):
+        historyFile = open('chatHistory.dat', 'a')
+        historyFile.write(f"{message}\n")
+        historyFile.close()
+
+    def sendHistory(self, client):
+        historyFile = open('chatHistory.dat', 'r')
+        client.send('Previous messages\n-------------'.encode('utf-8'))
+        for line in historyFile:
+            client.send(line.encode('utf-8'))
+        historyFile.close()
+        client.send(('-' * 15).encode('utf-8'))
+    
     def getIP(self):
         return self._IP
 
@@ -69,6 +83,7 @@ class Server(object):
                 client.send(f"{self._clients[socket]} disconnected".encode('utf-8'))
         self._socketsList.remove(socket)
         del self._clients[socket]
+
 
 
     def serverLoop(self):
@@ -133,7 +148,10 @@ class Server(object):
                             clientSocket.close()
                             continue
                     # If we succeded to login, place client in our socketList for select
-                    # and set clientSocket in dict with username as value
+                    # and set clientSocket in dict with username as value. Also we send the client
+                    # the chat history
+                    self.sendHistory(clientSocket)
+
                     self._clients[clientSocket] = username
                     self._socketsList.append(clientSocket)
                     
@@ -169,7 +187,7 @@ class Server(object):
                     print(serverMsg)
 
                     fullMessage = f"{self._clients[notifiedSocket]} >>> {message.decode('utf-8')}"
-
+                    self.writeToHistory(fullMessage)
                     # send message to all clients apart from the source
                     for client in self._clients:
                         if client != notifiedSocket:
