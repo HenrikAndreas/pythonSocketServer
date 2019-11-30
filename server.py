@@ -146,6 +146,7 @@ class Server(object):
                 else:
 
                     try:
+                        
                         message = notifiedSocket.recv(self._messageLength)
                         
                         if not message or message == False:
