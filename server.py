@@ -8,7 +8,8 @@ from datetime import datetime
 
 class Server(object):
     def __init__(self):
-        self._IP = 'localhost'#"10.0.0.119"
+        # self._IP = "10.0.0.119"
+        self._IP = "localhost"
         self._PORT = 1234
         self._messageLength = 150
         self._serverSocket = socket(AF_INET, SOCK_STREAM)
@@ -23,7 +24,10 @@ class Server(object):
         serverMsg = f'{self._time}: Listening on {self._IP}:{self._PORT}...'
         self.log(serverMsg)
         print(serverMsg)
-    
+
+    # Updating self._time variable
+    def timeUpdate(self):
+        self._time = f"{datetime.now().year}:{datetime.now().month}:{datetime.now().day} {datetime.now().hour}.{datetime.now().minute}"
     # Initiating the dictionary that stores usernames and passwords
     def _getUsers(self):
         users = {}
@@ -70,6 +74,7 @@ class Server(object):
     def serverLoop(self):
         while True:
             readSockets, writeSockets, exceptionSockets = select.select(self._socketsList, [], self._socketsList)
+            self.timeUpdate() # Get correct time
 
             for notifiedSocket in readSockets:
 

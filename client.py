@@ -6,7 +6,8 @@ import errno
 
 class Client(object):
     def __init__(self, username):
-        self._IP = 'localhost'#"80.212.111.238"
+        # self._IP = "80.212.111.238"
+        self._IP = "localhost"
         self._PORT = 1234
         self._messageLength = 150
         self._username = username
