@@ -162,8 +162,6 @@ class Server(object):
                     # Send message to all clients who has connected
                     for client in self._clients:
                         client.send(f"{self._clients[clientSocket]} connected".encode('utf-8'))
-                       
-
 
                 # Connection exists > New message is recieved
                 else:
