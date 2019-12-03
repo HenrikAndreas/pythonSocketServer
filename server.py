@@ -8,8 +8,8 @@ from datetime import datetime
 
 class Server(object):
     def __init__(self):
-        # self._IP = "10.0.0.119"
-        self._IP = "localhost"
+        self._IP = "10.0.0.119"
+        # self._IP = "localhost"
         self._PORT = 1234
         self._messageLength = 150
         self._serverSocket = socket(AF_INET, SOCK_STREAM)
